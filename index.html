@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trading Journal — A Local-First Trading Journal</title>
+  <meta name="description" content="A local-first trading journal that tracks your P&L, documents your lessons, and holds you accountable to your own rules. No subscription. No account. Your data stays on your machine." />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Reset & Global ─────────────────────────────────── */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      border-radius: 0 !important;
+    }
+
+    :root {
+      --bg-primary: #111111;
+      --bg-secondary: #1a1a1a;
+      --bg-tertiary: #222222;
+      --border: #2e2e2e;
+      --border-strong: #3d3d3d;
+      --text-primary: #f0f0f0;
+      --text-secondary: #999999;
+      --text-muted: #555555;
+      --accent-green: #2d6a4f;
+      --accent-green-text: #52b788;
+      --accent-red: #6b2737;
+      --accent-red-text: #e07a8a;
+      --accent-blue: #1a3a5c;
+      --accent-blue-text: #5ba3d9;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection {
+      background: var(--accent-green);
+      color: var(--accent-green-text);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      cursor: pointer;
+      border-radius: 0;
+      transition: background 0.15s ease;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    /* ─── Navigation ─────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 52px;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+    }
+
+    .nav-logo {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .nav-link {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--text-secondary);
+      transition: color 0.15s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--text-primary);
+    }
+
+    .btn-outline {
+      border: 1px solid var(--border-strong);
+      background: transparent;
+      color: var(--text-primary);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .btn-outline:hover {
+      background: var(--bg-tertiary);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    /* ─── Hero ───────────────────────────────────────────── */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 120px 24px 100px;
+    }
+
+    .hero-eyebrow {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      display: inline-block;
+      margin-bottom: 32px;
+    }
+
+    .hero-headline {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 52px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.1;
+      max-width: 680px;
+      margin-bottom: 28px;
+    }
+
+    .hero-subheadline {
+      font-family: 'Inter', sans-serif;
+      font-size: 18px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      max-width: 520px;
+      margin-bottom: 44px;
+    }
+
+    .hero-cta-row {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .btn-primary {
+      border: 1px solid var(--border-strong);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 14px 32px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .btn-primary:hover {
+      background: var(--bg-tertiary);
+    }
+
+    .btn-secondary {
+      border: 1px solid var(--border-strong);
+      background: transparent;
+      color: var(--text-muted);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 14px 32px;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+    }
+
+    .hero-footnote {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ─── Stats Bar ──────────────────────────────────────── */
+    .stats-bar {
+      width: 100%;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      height: 48px;
+      display: flex;
+      align-items: center;
+    }
+
+    .stat-item {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .stat-item + .stat-item {
+      border-left: 1px solid var(--border);
+    }
+
+    /* ─── Section Shared ─────────────────────────────────── */
+    .section-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-left: 1px solid var(--border-strong);
+      padding-left: 12px;
+      margin-bottom: 24px;
+    }
+
+    .section-headline {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 36px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.15;
+      margin-bottom: 28px;
+    }
+
+    /* ─── Problem Section ────────────────────────────────── */
+    .problem-section {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 100px 24px;
+    }
+
+    .problem-body {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      max-width: 600px;
+      margin-bottom: 56px;
+    }
+
+    .problem-body p + p {
+      margin-top: 20px;
+    }
+
+    .pain-cards {
+      display: flex;
+      gap: 1px;
+      background: var(--border);
+    }
+
+    .pain-card {
+      border: 1px solid var(--border);
+      background: var(--bg-secondary);
+      padding: 24px;
+      flex: 1;
+    }
+
+    .pain-card-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .pain-card-body {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    /* ─── Product Showcase ───────────────────────────────── */
+    .showcase-section {
+      width: 100%;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 100px 40px;
+    }
+
+    .showcase-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .showcase-headline {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 36px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.15;
+      margin-bottom: 64px;
+    }
+
+    .showcase-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: start;
+    }
+
+    .feature-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: var(--accent-green-text);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .feature-desc {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    .feature-desc:last-child {
+      margin-bottom: 0;
+    }
+
+    /* App UI Mockup */
+    .app-mockup {
+      border: 1px solid var(--border-strong);
+      background: var(--bg-primary);
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .mockup-topbar {
+      height: 36px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 8px;
+    }
+
+    .mockup-dot {
+      width: 8px;
+      height: 8px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-tertiary);
+    }
+
+    .mockup-title {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      margin-left: 6px;
+    }
+
+    .mockup-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 180px 1fr;
+    }
+
+    .mockup-sidebar {
+      border-right: 1px solid var(--border);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .mockup-sidebar-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 6px 8px;
+    }
+
+    .mockup-nav-item {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      padding: 6px 8px;
+      border: 1px solid transparent;
+    }
+
+    .mockup-nav-item.active {
+      color: var(--text-secondary);
+      border-color: var(--border);
+      background: var(--bg-tertiary);
+    }
+
+    .mockup-main {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mockup-chart-area {
+      flex: 1;
+      border: 1px solid var(--border);
+      background: var(--bg-primary);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .mockup-chart-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .mockup-chart-line {
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      padding-top: 8px;
+    }
+
+    .chart-bar {
+      flex: 1;
+      background: var(--accent-green);
+      opacity: 0.6;
+    }
+
+    .chart-bar.loss {
+      background: var(--accent-red);
+    }
+
+    .mockup-stats-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .mockup-stat-box {
+      flex: 1;
+      border: 1px solid var(--border);
+      background: var(--bg-primary);
+      padding: 8px;
+    }
+
+    .mockup-stat-val {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--accent-green-text);
+    }
+
+    .mockup-stat-val.neg {
+      color: var(--accent-red-text);
+    }
+
+    .mockup-stat-lbl {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* ─── How It Works ───────────────────────────────────── */
+    .how-section {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 100px 24px;
+    }
+
+    .step-list {
+      margin-top: 48px;
+      border-top: 1px solid var(--border);
+    }
+
+    .step-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      height: 72px;
+      border-bottom: 1px solid var(--border);
+      padding: 0 4px;
+    }
+
+    .step-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      color: var(--text-muted);
+      width: 48px;
+      flex-shrink: 0;
+    }
+
+    .step-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      width: 140px;
+      flex-shrink: 0;
+    }
+
+    .step-desc {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    /* ─── Quote Section ──────────────────────────────────── */
+    .quote-section {
+      width: 100%;
+      background: var(--bg-tertiary);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 80px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .quote-mark {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 48px;
+      color: var(--accent-green-text);
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .quote-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 20px;
+      color: var(--text-primary);
+      line-height: 1.7;
+      max-width: 600px;
+    }
+
+    .quote-attribution {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 24px;
+    }
+
+    /* ─── Download CTA ───────────────────────────────────── */
+    .download-section {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 120px 24px;
+      text-align: center;
+    }
+
+    .download-headline {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 42px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.1;
+    }
+
+    .download-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-top: 16px;
+    }
+
+    .download-cta-row {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    .trust-signals {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 20px;
+    }
+
+    /* ─── Footer ─────────────────────────────────────────── */
+    footer {
+      height: 64px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+    }
+
+    .footer-logo {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+
+    .footer-tagline {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ─── Responsive ─────────────────────────────────────── */
+    @media (max-width: 768px) {
+      nav {
+        padding: 0 20px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero-headline {
+        font-size: 36px;
+      }
+
+      .hero-cta-row {
+        flex-direction: column;
+        width: 100%;
+        max-width: 320px;
+      }
+
+      .btn-primary,
+      .btn-secondary {
+        width: 100%;
+        text-align: center;
+      }
+
+      .pain-cards {
+        flex-direction: column;
+        gap: 0;
+        background: transparent;
+      }
+
+      .stats-bar {
+        height: auto;
+        flex-wrap: wrap;
+      }
+
+      .stat-item {
+        width: 50%;
+        height: 44px;
+        border-left: none !important;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .stat-item:nth-child(even) {
+        border-left: 1px solid var(--border) !important;
+      }
+
+      .showcase-columns {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+
+      .showcase-section {
+        padding: 80px 24px;
+      }
+
+      .step-row {
+        height: auto;
+        padding: 20px 4px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .step-label {
+        width: auto;
+      }
+
+      .step-desc {
+        width: 100%;
+        padding-left: 0;
+      }
+
+      footer {
+        flex-direction: column;
+        height: auto;
+        padding: 20px;
+        gap: 8px;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero {
+        padding: 60px 20px;
+      }
+
+      .hero-headline {
+        font-size: 28px;
+      }
+
+      .problem-section,
+      .how-section {
+        padding: 60px 20px;
+      }
+
+      .download-section {
+        padding: 60px 20px;
+      }
+
+      .download-headline {
+        font-size: 30px;
+      }
+
+      .download-cta-row {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn-primary,
+      .btn-secondary {
+        width: 100%;
+        max-width: 320px;
+      }
+
+      .quote-text {
+        font-size: 17px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Navigation ──────────────────────────────────── -->
+  <nav>
+    <span class="nav-logo">Trading Journal</span>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="#download" class="nav-link">Download</a>
+      </div>
+      <a href="https://github.com/Nailemdeveloper/Trading-Journal/releases/download/0.1.0/Trading-Journal-Setup-0.1.0.exe">
+        <button class="btn-outline">Get Started</button>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ─── Hero ────────────────────────────────────────── -->
+  <section class="hero">
+    <span class="hero-eyebrow">Personal Trading Journal</span>
+    <h1 class="hero-headline">Stop repeating the<br>same mistakes.</h1>
+    <p class="hero-subheadline">A local-first trading journal that tracks your P&amp;L, documents your lessons, and holds you accountable to your own rules. No subscription. No account. Your data stays on your machine.</p>
+    <div class="hero-cta-row">
+      <a href="https://github.com/Nailemdeveloper/Trading-Journal/releases/download/0.1.0/Trading-Journal-Setup-0.1.0.exe">
+        <button class="btn-primary">Download for Windows</button>
+      </a>
+    </div>
+    <p class="hero-footnote">Free. Windows installer — full app, no browser required.</p>
+  </section>
+
+  <!-- ─── Stats Bar ────────────────────────────────────── -->
+  <div class="stats-bar">
+    <div class="stat-item">No Subscription</div>
+    <div class="stat-item">Runs Offline</div>
+    <div class="stat-item">Your Data Only</div>
+    <div class="stat-item">Windows Desktop App</div>
+  </div>
+
+  <!-- ─── Problem Section ──────────────────────────────── -->
+  <section class="problem-section">
+    <p class="section-label">The Problem</p>
+    <h2 class="section-headline">You already know what you're<br>doing wrong.</h2>
+    <div class="problem-body">
+      <p>Most traders lose money not because they lack knowledge — they lose because they repeat the same mistakes with no feedback loop to catch it. They overtrade. They break their own rules. They have no honest picture of whether they're actually improving or just getting lucky on good weeks.</p>
+      <p>Journaling fixes this. But every existing tool is either too complicated, costs a monthly fee, or sits in a browser tab you never open.</p>
+    </div>
+    <div class="pain-cards">
+      <div class="pain-card">
+        <p class="pain-card-label">Repeating Mistakes</p>
+        <p class="pain-card-body">No record of what went wrong means it happens again next week.</p>
+      </div>
+      <div class="pain-card" style="border-left: none;">
+        <p class="pain-card-label">No Clear Picture</p>
+        <p class="pain-card-body">You can't tell if you're improving or just riding volatility without tracking the curve.</p>
+      </div>
+      <div class="pain-card" style="border-left: none;">
+        <p class="pain-card-label">Broken Rules</p>
+        <p class="pain-card-body">Your trading rules exist somewhere — but not somewhere you look every morning before the open.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Product Showcase ──────────────────────────────── -->
+  <section class="showcase-section">
+    <div class="showcase-inner">
+      <p class="section-label">The Solution</p>
+      <h2 class="showcase-headline">Everything in one place.<br>Nothing you don't need.</h2>
+      <div class="showcase-columns">
+        <!-- Features List -->
+        <div class="features-list">
+          <p class="feature-label">Daily Entry System</p>
+          <p class="feature-desc">Log every session — P&amp;L, screenshots, emotional state, and three questions that force honest reflection.</p>
+
+          <p class="feature-label">P&amp;L Performance Chart</p>
+          <p class="feature-desc">Your running account curve over time. 7D, 1M, 3M, YTD, or all time. Win rate, average win, average loss — always visible.</p>
+
+          <p class="feature-label">Playbook Documents</p>
+          <p class="feature-desc">Your rules. Your setups. Your checklist. Written by you, visible every time you sit down to trade.</p>
+
+          <p class="feature-label">Journal Feed</p>
+          <p class="feature-desc">Every past entry as a card. Filter by date, ticker, tag, or emotional state. Green border for profitable days. Red for losses.</p>
+
+          <p class="feature-label">Dark + Light Mode</p>
+          <p class="feature-desc">Runs the way you work. Full desktop app — all data stored locally, nothing leaves your machine.</p>
+        </div>
+
+        <!-- App UI Mockup -->
+        <div class="app-mockup">
+          <div class="mockup-topbar">
+            <div class="mockup-dot"></div>
+            <div class="mockup-dot"></div>
+            <div class="mockup-dot"></div>
+            <span class="mockup-title">Trading Journal — Dashboard</span>
+          </div>
+          <div class="mockup-body">
+            <div class="mockup-sidebar">
+              <span class="mockup-sidebar-label">Navigation</span>
+              <div class="mockup-nav-item active">Dashboard</div>
+              <div class="mockup-nav-item">New Entry</div>
+              <div class="mockup-nav-item">Journal</div>
+              <div class="mockup-nav-item">Playbook</div>
+              <div class="mockup-nav-item">Settings</div>
+            </div>
+            <div class="mockup-main">
+              <div class="mockup-stats-row">
+                <div class="mockup-stat-box">
+                  <div class="mockup-stat-val">+$1,240</div>
+                  <div class="mockup-stat-lbl">This Week</div>
+                </div>
+                <div class="mockup-stat-box">
+                  <div class="mockup-stat-val">68%</div>
+                  <div class="mockup-stat-lbl">Win Rate</div>
+                </div>
+                <div class="mockup-stat-box">
+                  <div class="mockup-stat-val neg">-$310</div>
+                  <div class="mockup-stat-lbl">Avg Loss</div>
+                </div>
+              </div>
+              <div class="mockup-chart-area">
+                <div class="mockup-chart-label">Account Curve — 30D</div>
+                <div class="mockup-chart-line">
+                  <div class="chart-bar" style="height: 30%;"></div>
+                  <div class="chart-bar loss" style="height: 20%;"></div>
+                  <div class="chart-bar" style="height: 45%;"></div>
+                  <div class="chart-bar" style="height: 55%;"></div>
+                  <div class="chart-bar loss" style="height: 15%;"></div>
+                  <div class="chart-bar" style="height: 60%;"></div>
+                  <div class="chart-bar" style="height: 70%;"></div>
+                  <div class="chart-bar loss" style="height: 25%;"></div>
+                  <div class="chart-bar" style="height: 80%;"></div>
+                  <div class="chart-bar" style="height: 90%;"></div>
+                  <div class="chart-bar" style="height: 75%;"></div>
+                  <div class="chart-bar loss" style="height: 30%;"></div>
+                  <div class="chart-bar" style="height: 95%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── How It Works ─────────────────────────────────── -->
+  <section class="how-section">
+    <p class="section-label">How to Use It</p>
+    <h2 class="section-headline">A 10 minute daily habit<br>that compounds over time.</h2>
+    <div class="step-list">
+      <div class="step-row">
+        <span class="step-num">01</span>
+        <span class="step-label">Morning</span>
+        <span class="step-desc">Open the app. Read your Playbook rules before the market opens. Two minutes.</span>
+      </div>
+      <div class="step-row">
+        <span class="step-num">02</span>
+        <span class="step-label">After Session</span>
+        <span class="step-desc">Create a new entry. Log your P&amp;L, upload screenshots, answer the three questions. Do this within one hour of closing your trades.</span>
+      </div>
+      <div class="step-row">
+        <span class="step-num">03</span>
+        <span class="step-label">Weekly Review</span>
+        <span class="step-desc">Filter your entries. Look for patterns. Adjust your Playbook based on what you find.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Quote Section ────────────────────────────────── -->
+  <section class="quote-section">
+    <div class="quote-mark">"</div>
+    <p class="quote-text">Built this because I had no honest picture of whether I was improving or just getting lucky on good weeks. Three months in, the patterns were impossible to ignore.</p>
+    <p class="quote-attribution">— William, Builder &amp; Trader</p>
+  </section>
+
+  <!-- ─── Download CTA ──────────────────────────────────── -->
+  <section class="download-section" id="download">
+    <h2 class="download-headline">Start your first entry today.</h2>
+    <p class="download-sub">Free. Runs on Windows as a full desktop app.<br>Your data never leaves your computer.</p>
+    <div class="download-cta-row">
+      <a href="https://github.com/Nailemdeveloper/Trading-Journal/releases/download/0.1.0/Trading-Journal-Setup-0.1.0.exe">
+        <button class="btn-primary">Download for Windows</button>
+      </a>
+    </div>
+    <p class="trust-signals">No account required &nbsp;·&nbsp; No subscription &nbsp;·&nbsp; Export your data anytime</p>
+  </section>
+
+  <!-- ─── Footer ───────────────────────────────────────── -->
+  <footer>
+    <span class="footer-logo">Trading Journal</span>
+    <span class="footer-tagline">Built for traders who are serious about getting better.</span>
+  </footer>
+
+</body>
+</html>
